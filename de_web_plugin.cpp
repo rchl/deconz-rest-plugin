@@ -5510,16 +5510,6 @@ void DeRestPluginPrivate::addSensorNode(const deCONZ::Node *node, const deCONZ::
             fpSwitch.deviceId = i->deviceId();
             fpSwitch.profileId = i->profileId();
 
-            if (modelId.startsWith(QLatin1String("RWL02")))
-            {
-                sensor = getSensorNodeForAddress(node->address().ext()); // former created with with endpoint 1
-                if (sensor && sensor->deletedState() != Sensor::StateNormal)
-                {
-                    sensor = nullptr;
-                }
-                fpSwitch.endpoint = 2;
-            }
-
             if (modelId.startsWith(QLatin1String("Lightify Switch Mini")) ||  // Osram 3 button remote
                 modelId.startsWith(QLatin1String("Switch 4x EU-LIGHTIFY")) || // Osram 4 button remote
                 modelId.startsWith(QLatin1String("Switch 4x-LIGHTIFY")) || // Osram 4 button remote
@@ -6569,7 +6559,10 @@ void DeRestPluginPrivate::addSensorNode(const deCONZ::Node *node, const SensorFi
 
         if (modelId.startsWith(QLatin1String("RWL02"))) // Hue dimmer switch
         {
-            sensorNode.fingerPrint().endpoint = 2;
+            if (modelId != QLatin1String("RWL022")) // new model with one endpoint
+            {
+                sensorNode.fingerPrint().endpoint = 2;
+            }
             clusterId = VENDOR_CLUSTER_ID;
 
             if (!sensorNode.fingerPrint().hasInCluster(POWER_CONFIGURATION_CLUSTER_ID))
